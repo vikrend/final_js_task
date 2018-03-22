@@ -1,0 +1,95 @@
+{
+  "name": "visual_database",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/index.html",
+  "scripts": {
+    "test": "ava --verbose",
+    "test:watch": "ava --verbose --watch",
+    "webpack:watch": "webpack --mode development --config webpack.config.js",
+    "electron": "electron ./electron.js"
+  },
+  "eslintConfig": {
+    "extends": "airbnb-base",
+    "env": {
+      "es6": true,
+      "browser": true
+    },
+    "plugins": [
+      "ava"
+    ],
+    "rules": {
+      "import/no-extraneous-dependencies": [
+        "error",
+        {
+          "devDependencies": true
+        }
+      ],
+      "import/prefer-default-export": false,
+      "no-param-reassign": 0,
+      "ava/assertion-arguments": "error",
+      "ava/max-asserts": [
+        "error",
+        1
+      ],
+      "ava/no-async-fn-without-await": "error",
+      "ava/no-cb-test": "off",
+      "ava/no-duplicate-modifiers": "error",
+      "ava/no-identical-title": "error",
+      "ava/no-ignored-test-files": "error",
+      "ava/no-invalid-end": "error",
+      "ava/no-nested-tests": "error",
+      "ava/no-only-test": "error",
+      "ava/no-skip-assert": "error",
+      "ava/no-skip-test": "error",
+      "ava/no-statement-after-end": "error",
+      "ava/no-todo-implementation": "error",
+      "ava/no-todo-test": "warn",
+      "ava/no-unknown-modifiers": "error",
+      "ava/prefer-async-await": "error",
+      "ava/prefer-power-assert": "off",
+      "ava/test-ended": "error",
+      "ava/test-title": [
+        "error",
+        "if-multiple"
+      ],
+      "ava/use-t-well": "error",
+      "ava/use-t": "error",
+      "ava/use-test": "error",
+      "ava/use-true-false": "error"
+    },
+    "parserOptions": {
+      "ecmaVersion": 2017,
+      "sourceType": "module"
+    }
+  },
+  "ava": {
+    "require": [
+      "@babel/register"
+    ]
+  },
+  "babel": {
+    "presets": [
+      "@ava/stage-4"
+    ]
+  },
+  "author": "astrielov",
+  "license": "ISC",
+  "devDependencies": {
+    "@ava/babel-preset-stage-4": "^1.1.0",
+    "@babel/core": "^7.0.0-beta.39",
+    "@babel/register": "^7.0.0-beta.39",
+    "ava": "^0.25.0",
+    "eslint": "^4.18.2",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-ava": "^4.5.1",
+    "eslint-plugin-import": "^2.8.0",
+    "mock-local-storage": "^1.0.5",
+    "sinon": "^4.4.6",
+    "webpack": "^4.0.1",
+    "webpack-cli": "^2.0.9"
+  },
+  "dependencies": {
+    "electron": "~1.8.2"
+  }
+}
