@@ -17,16 +17,16 @@ export default class GroupsView extends Module {
 
     const groupsSidenav = document.querySelector('#slide-out');
     M.Sidenav.init(groupsSidenav, {});
-
-    const userGroupSelect = document.querySelector('#modal-groups-select');
-    M.FormSelect.init(userGroupSelect, {});
   }
 
   renderGroups({ groups, users, activeGroupId }) {
     this.groupsContainer.innerHTML = '';
     groups.forEach((group) => {
       const li = document.createElement('li');
-      const usersAmount = users.filter(user => user.group_id === group.group_id).length;
+      // eslint-disable-next-line arrow-body-style
+      const usersAmount = users.reduce((amount, user) => {
+        return amount + Number(user.group_id === group.group_id);
+      }, 0);
       li.innerHTML = `<a href="#">${group.name}<span class="badge" data-badge-caption="">${usersAmount}</span></a>`;
       li.dataset.group_id = group.group_id;
       if (group.group_id === activeGroupId) {

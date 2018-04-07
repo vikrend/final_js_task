@@ -8,14 +8,6 @@ export default class UserEditModal extends Module {
   }
 
   init() {
-    this.listenEvent('user:edit', this.setView.bind(this));
-    // this.addButton.addEventListener('click', this.setView.bind(this));
-
-    const addModal = document.querySelector('#modalAdd');
-    M.Modal.init(addModal, {});
-  }
-
-  setView() {
     this.modalAddContainer.innerHTML = `<div class="modal-content">
           <h4>Add new member</h4>
           <div class="row">
@@ -55,11 +47,7 @@ export default class UserEditModal extends Module {
                   <div class="row">
                       <div class="input-field col s12">
                           <select id="modal-groups-select">
-                              <option value="" disabled selected>Choose group</option>
-                              <option value="1">Administrator</option>
-                              <option value="2">Merchant</option>
-                              <option value="3">Operator</option>
-                              <option value="4">Client</option>
+
                           </select>
                           <label>Group</label>
                       </div>
@@ -81,7 +69,23 @@ export default class UserEditModal extends Module {
           <a id="modal-close" href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
           <a id="modal-create" href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Create</a>
       </div>`;
-
     M.Modal.init(this.modalAddContainer, {});
+    this.listenEvent('user:edit', this.setView.bind(this));
+    this.addButton.addEventListener('click', this.setView.bind(this));
+    this.userGroupSelect = document.querySelector('#modal-groups-select');
+  }
+
+  newUser() {
+
+  }
+
+  setView() {
+    this.userGroupSelect.innerHTML = `<option value="" disabled selected>Choose group</option>
+                              <option value="1">Administrator</option>
+                              <option value="90">Merchant</option>
+                              <option value="6">Operator</option>
+                              <option value="4">Client</option>`;
+
+    M.FormSelect.init(this.userGroupSelect, {});
   }
 }

@@ -11,8 +11,6 @@ export default class Storage extends Module {
   init() {
     this.listenEvent('group:updated', this.updateGroup.bind(this));
     this.listenEvent('group:removed', this.removeGroup.bind(this));
-    this.listenEvent('user:updated', this.updateUser.bind(this));
-    this.listenEvent('user:removed', this.removeUser.bind(this));
     this.listenEvent('groups:select', (groupId) => {
       this.activeGroupId = groupId;
       this.trigger('groups:render', {
@@ -22,6 +20,9 @@ export default class Storage extends Module {
       });
       this.trigger('users:render', { users: this.users, groupId });
     });
+    this.listenEvent('user:updated', this.updateUser.bind(this));
+    this.listenEvent('user:removed', this.removeUser.bind(this));
+    this.listenEvent('modal:open', () => {});
   }
 
   updateGroup({ id }) {
