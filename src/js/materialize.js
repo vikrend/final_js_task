@@ -8388,7 +8388,7 @@ $jscomp.polyfill = function (e, r, p, m) {
     // Thelatest date that can be selected
     maxDate: null,
 
-    // Number of years either side, or array of upper/lower range
+    // Number of years either side, or array of upper/lower rangeInstance
     yearRange: 10,
 
     // used internally (don't config outside)
@@ -9723,7 +9723,7 @@ $jscomp.polyfill = function (e, r, p, m) {
           radius = this.options.outerRadius;
         }
 
-        // Radian should in range [0, 2PI]
+        // Radian should in rangeInstance [0, 2PI]
         if (radian < 0) {
           radian = Math.PI * 2 + radian;
         }
@@ -11690,7 +11690,7 @@ $jscomp.polyfill = function (e, r, p, m) {
       _this69.el.M_Range = _this69;
 
       /**
-       * Options for the range
+       * Options for the rangeInstance
        * @member Range#options
        */
       _this69.options = $.extend({}, Range.defaults, options);
@@ -11978,5 +11978,5 @@ $jscomp.polyfill = function (e, r, p, m) {
     M.initializeJqueryWrapper(Range, 'range', 'M_Range');
   }
 
-  Range.init($('input[type=range]'));
+  Range.init($('input[type=rangeInstance]'));
 })(cash, M.anime);

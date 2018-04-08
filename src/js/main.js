@@ -1,13 +1,13 @@
-import Socket from './socket_events';
 import GroupsView from './groups_view';
 import UsersView from './users_view';
 import Storage from './storage';
-import UserEditModal from './user_edit';
+import EditUserModal from './edit_user_modal';
+import NewUserModal from './new_user_modal';
 
 const mediator = document;
 
-Storage.bindTo(mediator);
 GroupsView.bindTo(mediator);
 UsersView.bindTo(mediator);
-UserEditModal.bindTo(mediator);
-Socket.bindTo(mediator);
+EditUserModal.bindTo(mediator);
+NewUserModal.bindTo(mediator);
+Storage.bindTo(mediator);

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "ava --verbose",
     "test:watch": "ava --verbose --watch",
-    "webpack:watch": "webpack --mode development --config webpack.config.js",
+    "start": "webpack --mode development --config webpack.config.js",
     "electron": "electron ./electron.js"
   },
   "eslintConfig": {
