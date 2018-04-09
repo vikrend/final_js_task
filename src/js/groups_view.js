@@ -14,10 +14,9 @@ export default class GroupsView extends Module {
 
     this.groupsSidenav = document.querySelector('#slide-out');
     this.groupsSidenav.innerHTML = `
-      <ul id="groups-list">
-      </ul>
+      <ul id="groups-list"></ul>
       <div class="navigation-add">
-          <a id="addButton" class="btn-floating btn-large waves-effect waves-light" href="#!">
+          <a id="addButton" class="btn-floating btn-large waves-effect waves-light" href="#">
               <i class="material-icons">add</i>
           </a>
       </div>`;
@@ -27,26 +26,37 @@ export default class GroupsView extends Module {
     this.groupsContainer = document.querySelector('#groups-list');
     this.groupsContainer.addEventListener('click', ({ target }) => {
       const groupId = Number(target.closest('li').dataset.group_id);
-      this.trigger('groups:select', groupId);
+      this.trigger('storage:activeGroupSelect', groupId);
     });
 
-    this.listenEvent('groups:render', this.renderGroups.bind(this));
+    this.listenEvent('groupsView:render', this.renderGroups.bind(this));
+    this.listenEvent('groupsView:renderMembersAmount', this.renderGroupsMembersAmount.bind(this));
+  }
+
+  renderGroupsMembersAmount(users) {
+    const listElements = this.groupsContainer.childNodes;
+    listElements.forEach((li) => {
+      const counter = li.querySelector('span');
+      // eslint-disable-next-line arrow-body-style
+      const usersAmount = users.reduce((amount, user) => {
+        return amount + Number(user.group_id === Number(li.dataset.group_id));
+      }, 0);
+      counter.innerText = usersAmount;
+    });
   }
 
   renderGroups({ groups, users, activeGroupId }) {
     this.groupsContainer.innerHTML = '';
     groups.forEach((group) => {
       const li = document.createElement('li');
-      // eslint-disable-next-line arrow-body-style
-      const usersAmount = users.reduce((amount, user) => {
-        return amount + Number(user.group_id === group.group_id);
-      }, 0);
-      li.innerHTML = `<a href="#">${group.name}<span class="badge" data-badge-caption="">${usersAmount}</span></a>`;
+      li.innerHTML = `<a href="#">${group.name}<span class="badge" data-badge-caption=""></span></a>`;
       li.dataset.group_id = group.group_id;
       if (group.group_id === activeGroupId) {
         li.classList.add('active');
       }
       this.groupsContainer.appendChild(li);
     });
+    this.renderGroupsMembersAmount(users);
+    // M.toast({ html: 'Groups updated' });
   }
 }

@@ -5,7 +5,7 @@ export default class Storage extends Module {
     super(mediatorElem);
     this.groups = [];
     this.users = [];
-    this.activeGroupId = 0;
+    this.activeGroupId = null;
   }
 
   init() {
@@ -14,35 +14,70 @@ export default class Storage extends Module {
       const data = JSON.parse(event.data);
       this.trigger(data.action, data);
     };
-    this.listenEvent('fetch:user:update', this.fetchUserUpdate.bind(this));
-    this.listenEvent('fetch:user:new', this.fetchUserNew.bind(this));
+    socket.onerror = (event) => {
+      console.log(event);
+    };
+    this.listenEvent('storage:fetchUser:update', Storage.fetchUserUpdate);
+    this.listenEvent('storage:fetchUser:new', Storage.fetchUserNew);
     this.listenEvent('group:updated', this.updateGroup.bind(this));
     this.listenEvent('group:removed', this.removeGroup.bind(this));
-    this.listenEvent('groups:select', (groupId) => {
+    this.listenEvent('storage:activeGroupSelect', (groupId) => {
       this.activeGroupId = groupId;
       this.triggerRenderGroups();
-      this.trigger('users:render', this.activeGroupMembers());
+      this.trigger('usersView:render', this.activeGroupMembers());
     });
     this.listenEvent('user:updated', this.updateUser.bind(this));
     this.listenEvent('user:removed', this.removeUser.bind(this));
     this.listenEvent('storage:user:edit', this.handleEditUser.bind(this));
-    this.listenEvent('storage:user:new', () => { this.trigger('user:new', { groups: this.groups }); });
+    this.listenEvent('storage:user:new', () => { this.trigger('newUserModal:data', { groups: this.groups }); });
   }
 
   activeGroupMembers() {
     return this.users.filter(user => user.group_id === this.activeGroupId);
   }
 
-  fetchUserUpdate(user) {
+  static fetchUserUpdate(user) {
     const body = JSON.stringify(user);
     const method = 'PUT';
-    fetch(`https://ums-honeybadger.herokuapp.com/user/${user.user_id}`, { body, method });
+    fetch(`https://ums-honeybadger.herokuapp.com/user/${user.user_id}`, { body, method })
+      .then((response) => {
+        if (response.status !== 200) {
+          M.toast({ html: `Error: ${response.statusText} (${response.status})`, classes: 'red' });
+        }
+        if (response.status === 200) {
+          M.toast({ html: 'Success', classes: 'green' });
+        }
+      });
   }
 
-  fetchUserNew(user) {
+  static fetchUserNew(user) {
     const body = JSON.stringify(user);
     const method = 'POST';
-    fetch(`https://ums-honeybadger.herokuapp.com/user`, { body, method });
+    fetch('https://ums-honeybadger.herokuapp.com/user', { body, method })
+      .then((response) => {
+        if (response.status !== 201) {
+          M.toast({ html: `Error: ${response.statusText} (${response.status})`, classes: 'red' });
+        }
+        if (response.status === 201) {
+          M.toast({ html: 'Success', classes: 'green' });
+        }
+      });
+  }
+
+  handleEditUser(userId) {
+    const user = this.users.find(usr => usr.user_id === Number(userId));
+    this.trigger('editUserModal:data', {
+      groups: this.groups,
+      user,
+    });
+  }
+
+  triggerRenderGroups() {
+    this.trigger('groupsView:render', {
+      groups: this.groups,
+      users: this.users,
+      activeGroupId: this.activeGroupId,
+    });
   }
 
   updateGroup({ id }) {
@@ -56,25 +91,9 @@ export default class Storage extends Module {
         } else {
           this.groups[groupIndex] = group;
         }
-        this.groups.sort((g1, g2) => g1.name >= g2.name);
+        this.groups.sort((g1, g2) => g1.name.localeCompare(g2.name));
         this.triggerRenderGroups();
       });
-  }
-
-  handleEditUser(userId) {
-    const user = this.users.find(usr => usr.user_id === Number(userId));
-    this.trigger('user:edit', {
-      groups: this.groups,
-      user,
-    });
-  }
-
-  triggerRenderGroups() {
-    this.trigger('groups:render', {
-      groups: this.groups,
-      users: this.users,
-      activeGroupId: this.activeGroupId,
-    });
   }
 
   removeGroup({ id }) {
@@ -83,8 +102,11 @@ export default class Storage extends Module {
         this.groups.splice(index, 1);
       }
     });
+    if (this.activeGroupId === id) {
+      this.activeGroupId = null;
+      this.trigger('usersView:render', this.activeGroupMembers());
+    }
     this.triggerRenderGroups();
-    this.trigger('modal:renderGroupsSelect', { groups: this.groups });
   }
 
   updateUser({ id }) {
@@ -97,9 +119,12 @@ export default class Storage extends Module {
         } else {
           this.users[userIndex] = user;
         }
-        this.users.sort((u1, u2) => u1.name >= u2.name);
-        this.triggerRenderGroups();
-        this.trigger('users:render', this.activeGroupMembers());
+        this.users.sort((u1, u2) => u1.name.localeCompare(u2.name));
+        this.trigger('groupsView:renderMembersAmount', this.users);
+        this.trigger('usersView:removeUser', user.user_id);
+        if (user.group_id === this.activeGroupId) {
+          this.trigger('usersView:pasteUser', { user, users: this.activeGroupMembers() });
+        }
       });
   }
 
@@ -109,7 +134,7 @@ export default class Storage extends Module {
         this.users.splice(index, 1);
       }
     });
-    this.triggerRenderGroups();
-    this.trigger('users:render', this.activeGroupMembers());
+    this.trigger('usersView:removeUser', id);
+    this.trigger('groupsView:renderMembersAmount', this.users);
   }
 }

@@ -4,7 +4,7 @@ export default class EditUserModal extends Module {
   init() {
     this.modalEditContainer = document.querySelector('#modalEdit');
 
-    this.listenEvent('user:edit', this.setModalContent.bind(this));
+    this.listenEvent('editUserModal:data', this.setModalContent.bind(this));
   }
 
   setModalContent({ groups, user }) {
@@ -72,8 +72,8 @@ export default class EditUserModal extends Module {
           </div>
       </div>
       <div class="modal-footer">
-          <a id="modal-close" href="#" class="deep-orange lighten-2 waves-effect waves-red btn-flat">Close</a>
-          <a id="modal-save" href="#" class="light-green lighten-2 waves-effect waves-green btn-flat">Save</a>
+          <a id="modal-close" class="deep-orange lighten-2 waves-effect waves-red btn-flat">Close</a>
+          <a id="modal-save" class="light-green lighten-2 waves-effect waves-green btn-flat">Save</a>
       </div>`;
 
     this.firstNameInput = this.modalEditContainer.querySelector('#first_name');
@@ -88,6 +88,9 @@ export default class EditUserModal extends Module {
     this.fillFields();
     this.setEditability(isAdminGroup, noCreditsLeft);
 
+    if (this.modalInstance) {
+      this.modalInstance.destroy();
+    }
     this.modalInstance = M.Modal.init(this.modalEditContainer);
     this.rangeInstance = M.Range.init(this.creditsRangeInput);
     this.initSelectGroupList({ groups, userGroupId: userGroup.group_id });
@@ -140,20 +143,12 @@ export default class EditUserModal extends Module {
   }
 
   initSelectGroupList({ groups }) {
-    if (!this.modalInstance) {
-      return;
-    }
-    if (this.selectInstance) {
-      this.selectInstance.destroy();
-    }
     this.groupSelect.innerHTML = '<option value="" disabled>Choose group</option>';
     groups.forEach((group) => {
       const op = document.createElement('option');
       op.value = group.group_id;
       op.innerText = group.name;
-      if (group.group_id === this.user.group_id) {
-        op.selected = true;
-      }
+      op.selected = group.group_id === this.user.group_id;
       this.groupSelect.appendChild(op);
     });
     this.selectInstance = M.FormSelect.init(this.groupSelect);
@@ -162,25 +157,22 @@ export default class EditUserModal extends Module {
   saveChanges(userId) {
     const user = {};
 
-    this.modalInstance.close();
     user.user_id = userId;
-    user.name = `${this.firstNameInput.value}  ${this.lastNameInput.value}`;
+    user.name = `${this.firstNameInput.value} ${this.lastNameInput.value}`;
     user.street = this.streetInput.value;
     user.zip_code = Number(this.zipCodeInput.value);
     user.city = this.cityInput.value;
     user.phone = this.phoneInput.value;
     user.group_id = Number(this.modalEditContainer.querySelector('#modal-groups-select').value);
     user.credits = Number(this.creditsRangeInput.value);
-    this.trigger('fetch:user:update', user);
+    this.trigger('storage:fetchUser:update', user);
   }
 
   editEnd() {
+    this.modalInstance.close();
     this.rangeInstance.destroy();
     this.selectInstance.destroy();
-    this.modalInstance.destroy();
-    this.rangeInstance = null;
-    this.selectInstance = null;
-    this.modalInstance = null;
     this.modalEditContainer.innerHTML = '';
+    document.querySelector('body').style.overflowY = 'scroll';
   }
 }

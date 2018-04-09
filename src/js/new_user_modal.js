@@ -5,7 +5,7 @@ export default class NewUserModal extends Module {
     this.modalEditContainer = document.querySelector('#modalEdit');
     this.newUserButton = document.querySelector('#addButton');
 
-    this.listenEvent('user:new', this.setModalContent.bind(this));
+    this.listenEvent('newUserModal:data', this.setModalContent.bind(this));
     this.newUserButton.addEventListener('click', () => { this.trigger('storage:user:new'); });
   }
 
@@ -69,8 +69,8 @@ export default class NewUserModal extends Module {
           </div>
       </div>
       <div class="modal-footer">
-          <a id="modal-close" href="#" class="deep-orange lighten-2 waves-effect waves-red btn-flat">Close</a>
-          <a id="modal-save" href="#" class="light-green lighten-2 waves-effect waves-green btn-flat">Create</a>
+          <a id="modal-close" class="deep-orange lighten-2 waves-effect waves-red btn-flat">Close</a>
+          <a id="modal-save" class="light-green lighten-2 waves-effect waves-green btn-flat">Create</a>
       </div>`;
 
     this.firstNameInput = this.modalEditContainer.querySelector('#first_name');
@@ -82,6 +82,9 @@ export default class NewUserModal extends Module {
     this.groupSelect = this.modalEditContainer.querySelector('#modal-groups-select');
     this.creditsRangeInput = this.modalEditContainer.querySelector('#range_credit');
 
+    if (this.modalInstance) {
+      this.modalInstance.destroy();
+    }
     this.modalInstance = M.Modal.init(this.modalEditContainer);
     this.rangeInstance = M.Range.init(this.creditsRangeInput);
     this.initSelectGroupList({ groups });
@@ -98,12 +101,6 @@ export default class NewUserModal extends Module {
   }
 
   initSelectGroupList({ groups }) {
-    if (!this.modalInstance) {
-      return;
-    }
-    if (this.selectInstance) {
-      this.selectInstance.destroy();
-    }
     this.groupSelect.innerHTML = '<option value="" disabled selected>Choose group</option>';
     groups.forEach((group) => {
       const op = document.createElement('option');
@@ -117,25 +114,22 @@ export default class NewUserModal extends Module {
   saveChanges() {
     const user = {};
 
-    this.modalInstance.close();
     user.user_id = 0;
-    user.name = `${this.firstNameInput.value}  ${this.lastNameInput.value}`;
+    user.name = `${this.firstNameInput.value} ${this.lastNameInput.value}`;
     user.street = this.streetInput.value;
     user.zip_code = Number(this.zipCodeInput.value);
     user.city = this.cityInput.value;
     user.phone = this.phoneInput.value;
     user.group_id = Number(this.modalEditContainer.querySelector('#modal-groups-select').value);
     user.credits = Number(this.creditsRangeInput.value);
-    this.trigger('fetch:user:new', user);
+    this.trigger('storage:fetchUser:new', user);
   }
 
   editEnd() {
+    this.modalInstance.close();
     this.rangeInstance.destroy();
     this.selectInstance.destroy();
-    this.modalInstance.destroy();
-    this.rangeInstance = null;
-    this.selectInstance = null;
-    this.modalInstance = null;
     this.modalEditContainer.innerHTML = '';
+    document.querySelector('body').style.overflowY = 'scroll';
   }
 }
