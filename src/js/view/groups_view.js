@@ -1,4 +1,4 @@
-import Module from './module';
+import Module from '../module';
 
 export default class GroupsView extends Module {
   init() {
