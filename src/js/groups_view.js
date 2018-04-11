@@ -16,7 +16,7 @@ export default class GroupsView extends Module {
     this.groupsSidenav.innerHTML = `
       <ul id="groups-list"></ul>
       <div class="navigation-add">
-          <a id="addButton" class="btn-floating btn-large waves-effect waves-light" href="#">
+          <a id="addButton" class="btn-floating btn-large waves-effect waves-light">
               <i class="material-icons">add</i>
           </a>
       </div>`;
@@ -57,6 +57,5 @@ export default class GroupsView extends Module {
       this.groupsContainer.appendChild(li);
     });
     this.renderGroupsMembersAmount(users);
-    // M.toast({ html: 'Groups updated' });
   }
 }
