@@ -33,6 +33,6 @@ There is no possibility to modify or create groups.
     npm run-script electron
 
 #### Using browser:
-    1. npm start
-    2. open src/index.html
+    npm start
+    open src/index.html
    
