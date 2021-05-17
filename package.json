@@ -86,7 +86,7 @@
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-ava": "^9.0.0",
-    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-import": "^2.23.2",
     "mock-local-storage": "^1.1.11",
     "sinon": "^8.1.0",
     "webpack": "^4.41.5",
